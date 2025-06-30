@@ -17,7 +17,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
 
     public async Task AddAsync(T entity)
     {
-        await _context.AddAsync(entity);
+        await _dbSet.AddAsync(entity);
     }
 
     public void Delete(T entity)

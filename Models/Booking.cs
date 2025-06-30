@@ -7,5 +7,5 @@ public class Booking
     public DateTime Date { get; set; }
     public Double Price { get; set; }
     public Guid FestivalId { get; set; }
-    public Festival Festival { get; set; } 
+    public Festival? Festival { get; set; } 
 }

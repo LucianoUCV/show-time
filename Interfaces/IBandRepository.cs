@@ -1,6 +1,8 @@
-﻿namespace show-time.Interfaces
+﻿using Models;
+
+namespace show_time.Interfaces;
+
+public interface IBandRepository : IRepositoryBase<Band>
 {
-    public interface IBandRepository
-{
-}
+
 }

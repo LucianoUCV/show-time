@@ -1,6 +1,12 @@
-﻿namespace show-time.Repositories
+﻿using Context;
+using Models;
+using show_time.Interfaces;
+
+namespace show_time.Repositories;
+
+public class BandRepository : RepositoryBase<Band>, IBandRepository
 {
-    public class BandRepository
-{
-}
+    public BandRepository(ShowTimeContext context) : base(context)
+    {
+    }
 }
