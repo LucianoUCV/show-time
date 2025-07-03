@@ -1,0 +1,38 @@
+﻿@page "/bands/create"
+@rendermode InteractiveServer
+
+@inject IBandRepository bandRepository
+@inject NavigationManager NavigationManager
+
+<Fields>
+	<Field>
+		<Label>Name:</Label>
+		<TextEdit @bind-Text="Band.Name" Placeholder="Enter band name" Required="true" />
+	</Field>
+	<Field>
+		<Label>Genre:</Label>
+		<Select TValue="Genre" @bind-SelectedValue="Band.Genre">
+			@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
+			{
+				<SelectItem Value="@genre">@genre.ToString()</SelectItem>
+			}
+		</Select>
+	</Field>
+</Fields>
+
+<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="HandleSubmit">Save</Button>
+
+<div>
+	<a href="/bands">Back to list</a>
+</div>
+
+@code {
+	private Band Band { get; set; } = new();
+
+	private async Task HandleSubmit()
+	{
+		await bandRepository.AddAsync(Band);
+		await bandRepository.SaveChangesAsync();
+		NavigationManager.NavigateTo("/bands");
+	}
+}

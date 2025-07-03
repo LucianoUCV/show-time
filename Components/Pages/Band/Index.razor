@@ -1,0 +1,42 @@
+﻿@page "/bands"
+@rendermode InteractiveServer
+@inject IBandRepository bandRepository
+
+<h3>Bands</h3>
+
+<Div>
+    <p>Welcome to the Bands page</p>
+</Div>
+
+<a href="@($"bands/create")" class="btn btn-primary mb-3">Create New Band</a>
+
+<DataGrid TItem="Band"
+    Data="_bands"
+    PageSize="10"
+    Responsive
+    Striped
+    Bordered
+    Hoverable
+    ShowPager>
+
+    <DataGridColumns>
+        <DataGridColumn TItem="Band" Field="@nameof(Band.Name)" Caption="Name"/>
+        <DataGridColumn TItem="Band" Field="@nameof(Band.Genre)" Caption="Genre"/>
+        <DataGridColumn TItem="Band" Caption="Actions">
+        <DisplayTemplate>
+            <a href="@($"bands/edit?id={context.Id}")">Edit</a>
+            <a href="@($"bands/details?id={context.Id}")">Details</a>
+            <a href="@($"bands/delete?id={context.Id}")">Delete</a>
+        </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+</DataGrid>
+
+@code{
+    private List<Band> _bands;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bands = (await bandRepository.GetAllAsync()).ToList();
+    }
+}

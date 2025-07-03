@@ -1,0 +1,60 @@
+﻿@page "/bands/edit"
+@rendermode InteractiveServer
+
+@inject IBandRepository bandRepository
+@inject NavigationManager NavigationManager
+
+@if (Band == null)
+{
+	<p><em>Loading...</em></p>
+}
+else 
+{
+	<Fields>
+		<Field>
+			<Label>Name:</Label>
+			<TextEdit @bind-Text="Band.Name" Placeholder="Enter band name" Required="true" />
+		</Field>
+		<Field>
+			<Label>Genre:</Label>
+			<Select TValue="Genre" @bind-SelectedValue="Band.Genre">
+				@foreach (Genre genre in Enum.GetValues(typeof(Genre)))
+				{
+					<SelectItem Value="@genre">@genre.ToString()</SelectItem>
+				}
+			</Select>
+		</Field>
+	</Fields>
+
+
+	<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="HandleSubmit">Save</Button>
+	<Button Color="Color.Secondary" Type="ButtonType.Button" Clicked="Cancel">Cancel</Button>
+
+	<div>
+		<a href="/bands">Back to list</a>
+	</div>
+}
+
+@code {
+	[SupplyParameterFromQuery]
+	public Guid Id { get; set; }
+
+	private Band? Band;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Band = await bandRepository.GetByIdAsync(Id);
+	}
+
+	private async Task HandleSubmit()
+	{
+		bandRepository.Update(Band);
+		await bandRepository.SaveChangesAsync();
+		NavigationManager.NavigateTo("/bands");
+	}
+
+	private void Cancel()
+	{
+		NavigationManager.NavigateTo("/bands");
+	}
+}

@@ -1,0 +1,42 @@
+﻿@page "/bands/delete"
+@rendermode InteractiveServer
+
+@inject IBandRepository bandRepository
+@inject NavigationManager NavigationManager
+
+<Card>
+	<CardHeader>
+		<h3>Delete Band</h3>
+	</CardHeader>
+	<CardBody>
+		<p>Are you sure you want to delete this band?</p>
+	</CardBody>
+	<CardFooter>
+		<Button Color="Color.Danger" Clicked="HandleDelete">Delete</Button>
+		<Button Color="Color.Secondary" Clicked="Cancel">Cancel</Button>
+	</CardFooter>
+</Card>
+
+@code {
+	[SupplyParameterFromQuery]
+	public Guid Id { get; set; }
+
+	private Band? Band;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Band = await bandRepository.GetByIdAsync(Id);
+	}
+
+	private async Task HandleDelete()
+	{
+		bandRepository.Delete(Band);
+		await bandRepository.SaveChangesAsync();
+		NavigationManager.NavigateTo("/bands");
+	}
+
+	private void Cancel()
+	{
+		NavigationManager.NavigateTo("/bands");
+	}
+}
