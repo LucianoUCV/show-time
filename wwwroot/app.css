@@ -1,5 +1,9 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Montserrat", sans-serif !important;
+    background-image: url("background.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 a, .btn-link {
@@ -17,7 +21,8 @@ a, .btn-link {
 }
 
 .content {
-    padding-top: 1.1rem;
+    padding-top: 3rem;
+    width: 100%;
 }
 
 h1:focus {
@@ -77,4 +82,235 @@ h1:focus {
 }
 
 
+.custom-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centrare meniului orizontal */
+    background: transparent;
+    padding: 1rem 2rem;
+    gap: 2rem;
+    width: 100%;
+}
 
+.logo {
+    width: 120px;
+    height: auto;
+    margin-right: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .nav-links li {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        font-size: 1.4rem;
+        color: white;
+        font-weight: 700;
+        transition: color 0.3s ease;
+    }
+
+        .nav-links a.active {
+            border-bottom: 2px solid white;
+        }
+
+        .nav-links a:hover {
+            color: #ccc;
+        }
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: white;
+}
+
+
+.hero-section {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    padding: 3rem 1rem;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.hero-section h1 {
+    font-weight: 900;
+    font-size: 3rem;
+    margin-bottom: 0.3rem;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.hero-section h3 {
+    font-weight: 400;
+    margin-bottom: 1rem;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.hero-section p {
+    font-size: 1.3rem;
+    margin-bottom: 1.8rem;
+}
+
+.date-btn {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.carousel-wrapper {
+    max-width: 900px;
+    margin: 2rem auto 4rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    background: #111;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.8);
+    transition: transform 0.5s ease;
+}
+
+.carousel-wrapper:hover .image-container img {
+    transform: scale(1.05);
+    filter: brightness(1);
+}
+
+.caption {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    color: #fff;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.4);
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    max-width: 70%;
+}
+
+.caption h4 {
+    margin: 0 0 0.3rem 0;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+.caption p {
+    margin: 0;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.page-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+.bands-page-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+/* Header for Title and Button */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+    .page-header h3 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #fff;
+        margin: 0;
+    }
+
+/* The main container for the table's "frosted glass" look */
+.datagrid-container {
+    background-color: rgba(15, 25, 40, 0.7); /* Dark, semi-transparent blue */
+    backdrop-filter: blur(8px); /* The modern blur effect */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    overflow: hidden;
+}
+
+/* Targeting the DataGrid component specifically */
+.modern-datagrid, .modern-datagrid .table {
+    background-color: transparent !important;
+    color: #f0f0f0;
+}
+
+    /* Style the Table Header (thead) */
+    .modern-datagrid thead th {
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        background-color: transparent !important;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Style the Table Body Rows (tbody) */
+    .modern-datagrid tbody tr {
+        border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .modern-datagrid tbody td {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        vertical-align: middle;
+    }
+
+    /* Custom Striped and Hover effects to match our theme */
+    .modern-datagrid .datagrid-row-striped > td {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    .modern-datagrid .datagrid-row-hover:hover > td {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        color: #fff;
+    }
+
+/* Styling for the action buttons container */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Empty data state message */
+.empty-datagrid-message {
+    text-align: center;
+    padding: 2rem;
+    color: #ccc;
+}

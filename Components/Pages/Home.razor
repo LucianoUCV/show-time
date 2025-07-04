@@ -1,7 +1,64 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Festivale epice</PageTitle>
 
-<h1>Hello, world!</h1>
+<header class="hero-section">
+    <div class="hero-content">
+        <h1>🎉 Cele mai tari festivale din tara</h1>
+        <h3><em>(mai putin cel al lui Selly)</em></h3>
+        <p>Alege unul ( sau mai multe )</p>
+        <Addons>
+            <Addon AddonType="AddonType.Body">
+                <DatePicker @ref="@datePicker" TValue="DateTime?" @bind-Date="@value" />
+            </Addon>
+            <Addon AddonType="AddonType.End">
+                <Button Color="Color.Light" Clicked="@(()=>datePicker.ToggleAsync())" Class="date-btn">
+                    <Icon Name="IconName.CalendarDay" /> Alege data
+                </Button>
+            </Addon>
+        </Addons>
+    </div>
+</header>
 
-Welcome to your new app.
+<section class="carousel-wrapper">
+    <Carousel @bind-SelectedSlide="@selectedSlide" Autoplay="true" AutoplayInterval="5000">
+        <CarouselSlide Name="1">
+            <div class="image-container">
+                <Image Source="intencity.jpg" Text="Intencity" Display="Display.Block" />
+                <div class="caption">
+                    <h4>Intencity</h4>
+                    <p>Muzica si distractie in inima Olteniei!</p>
+                </div>
+            </div>
+        </CarouselSlide>
+        <CarouselSlide Name="2">
+            <div class="image-container">
+                <Image Source="antol.jpg" Text="Untold" Display="Display.Block" />
+                <div class="caption">
+                    <h4>Untold</h4>
+                    <p>Distractie ( si imprumut bancar pentru cazare )</p>
+                </div>
+            </div>
+        </CarouselSlide>
+        <CarouselSlide Name="3">
+            <div class="image-container">
+                <Image Source="bp.png" Text="Beach Please" Display="Display.Block" />
+                <div class="caption">
+                    <h4>Beach Please</h4>
+                    <p>Nu merita anul asta!!</p>
+                </div>
+            </div>
+        </CarouselSlide>
+    </Carousel>
+</section>
+
+<footer class="page-footer">
+    <p>© 2025 Show Time - Distractia la un click distanta </p>
+</footer>
+
+@code {
+    DatePicker<DateTime?> datePicker;
+    DateTime? value;
+    private string selectedSlide = "1";
+}

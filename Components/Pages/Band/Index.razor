@@ -2,37 +2,59 @@
 @rendermode InteractiveServer
 @inject IBandRepository bandRepository
 
-<h3>Bands</h3>
+<div class="bands-page-container">
 
-<Div>
-    <p>Welcome to the Bands page</p>
-</Div>
+    <header class="page-header">
+        <h3>Bands</h3>
+        <a href="/bands/create" class="btn btn-primary">
+            <Icon Name="IconName.Add" /> Create New Band
+        </a>
+    </header>
 
-<a href="@($"bands/create")" class="btn btn-primary mb-3">Create New Band</a>
+    <div class="datagrid-container">
+        @if (_bands == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <DataGrid TItem="Band"
+                      Data="_bands"
+                      PageSize="10"
+                      Responsive
+                      Striped
+                      Hoverable
+                      Class="modern-datagrid">
 
-<DataGrid TItem="Band"
-    Data="_bands"
-    PageSize="10"
-    Responsive
-    Striped
-    Bordered
-    Hoverable
-    ShowPager>
+                <DataGridColumns>
+                    <DataGridColumn TItem="Band" Field="@nameof(Band.Name)" Caption="Name" />
+                    <DataGridColumn TItem="Band" Field="@nameof(Band.Genre)" Caption="Genre" />
+                    <DataGridColumn TItem="Band" Caption="Actions" TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            <div class="action-buttons">
+                                @* 
+                                  THE FIX:
+                                  We use standard <a> tags with an href for guaranteed navigation.
+                                  We apply the 'btn' classes manually to make them look like buttons.
+                                *@
+                                <a href="@($"/bands/edit?id={context.Id}")" class="btn btn-outline-secondary btn-sm">Edit</a>
+                                <a href="@($"/bands/details?id={context.Id}")" class="btn btn-outline-info btn-sm">Details</a>
+                                <a href="@($"/bands/delete?id={context.Id}")" class="btn btn-outline-danger btn-sm">Delete</a>
+                            </div>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <EmptyTemplate>
+                    <div class="empty-datagrid-message">
+                        <p>No bands have been added yet.</p>
+                    </div>
+                </EmptyTemplate>
+            </DataGrid>
+        }
+    </div>
+</div>
 
-    <DataGridColumns>
-        <DataGridColumn TItem="Band" Field="@nameof(Band.Name)" Caption="Name"/>
-        <DataGridColumn TItem="Band" Field="@nameof(Band.Genre)" Caption="Genre"/>
-        <DataGridColumn TItem="Band" Caption="Actions">
-        <DisplayTemplate>
-            <a href="@($"bands/edit?id={context.Id}")">Edit</a>
-            <a href="@($"bands/details?id={context.Id}")">Details</a>
-            <a href="@($"bands/delete?id={context.Id}")">Delete</a>
-        </DisplayTemplate>
-        </DataGridColumn>
-    </DataGridColumns>
-</DataGrid>
-
-@code{
+@code {
     private List<Band> _bands;
 
     protected override async Task OnInitializedAsync()
