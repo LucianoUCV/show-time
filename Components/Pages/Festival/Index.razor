@@ -1,7 +1,62 @@
 ﻿@page "/festivals"
+@rendermode InteractiveServer
+@inject IFestivalRepository festivalRepository
 
-<h3>Index</h3>
+<div class="bands-page-container">
+
+    <header class="page-header">
+        <h3>Festivals</h3>
+        <a href="/festivals/create" class="btn btn-primary">
+            <Icon Name="IconName.Add" /> Add new festival
+        </a>
+    </header>
+
+    <div class="datagrid-container">
+        @if (_festivals == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <DataGrid TItem="Festival"
+                      Data="_festivals"
+                      PageSize="10"
+                      Responsive
+                      Striped
+                      Hoverable
+                      Class="modern-datagrid">
+
+                <DataGridColumns>
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.Name)" Caption="Name" />
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.Location)" Caption="Location" />
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.StartDate)" Caption="Start Date" />
+
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.EndDate)" Caption="End Date" />
+                    <DataGridColumn TItem="Festival" Caption="Actions" TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            <div class="action-buttons">
+                                <a href="@($"/festivals/edit?id={context.Id}")" class="btn btn-outline-secondary btn-sm">Edit</a>
+                                <a href="@($"/festivals/details?id={context.Id}")" class="btn btn-outline-info btn-sm">Details</a>
+                                <a href="@($"/festivals/delete?id={context.Id}")" class="btn btn-outline-danger btn-sm">Delete</a>
+                            </div>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <EmptyTemplate>
+                    <div class="empty-datagrid-message">
+                        <p>No festivals have been added yet.</p>
+                    </div>
+                </EmptyTemplate>
+            </DataGrid>
+        }
+    </div>
+</div>
 
 @code {
+    private List<Festival> _festivals;
 
+    protected override async Task OnInitializedAsync()
+    {
+        _festivals = (await festivalRepository.GetAllAsync()).ToList();
+    }
 }
