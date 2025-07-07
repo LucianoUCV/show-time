@@ -29,9 +29,16 @@
                 <DataGridColumns>
                     <DataGridColumn TItem="Festival" Field="@nameof(Festival.Name)" Caption="Name" />
                     <DataGridColumn TItem="Festival" Field="@nameof(Festival.Location)" Caption="Location" />
-                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.StartDate)" Caption="Start Date" />
-
-                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.EndDate)" Caption="End Date" />
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.StartDate)" Caption="Start Date">
+                        <DisplayTemplate>
+                            @context.StartDate?.ToString("dd-MM-yyyy")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="Festival" Field="@nameof(Festival.EndDate)" Caption="End Date">
+                        <DisplayTemplate>
+                            @context.EndDate?.ToString("dd-MM-yyyy")
+                        </DisplayTemplate>
+                    </DataGridColumn>
                     <DataGridColumn TItem="Festival" Caption="Actions" TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
                             <div class="action-buttons">

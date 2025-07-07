@@ -85,7 +85,7 @@ h1:focus {
 .custom-navbar {
     display: flex;
     align-items: center;
-    justify-content: center; /* Centrare meniului orizontal */
+    justify-content: center; 
     background: transparent;
     padding: 1rem 2rem;
     gap: 2rem;
@@ -238,7 +238,6 @@ h1:focus {
     padding: 1rem;
 }
 
-/* Header for Title and Button */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -253,23 +252,21 @@ h1:focus {
         margin: 0;
     }
 
-/* The main container for the table's "frosted glass" look */
+
 .datagrid-container {
-    background-color: rgba(15, 25, 40, 0.7); /* Dark, semi-transparent blue */
-    backdrop-filter: blur(8px); /* The modern blur effect */
+    background-color: rgba(15, 25, 40, 0.7); 
+    backdrop-filter: blur(8px); 
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 0.5rem 1.5rem 1.5rem 1.5rem;
     overflow: hidden;
 }
 
-/* Targeting the DataGrid component specifically */
 .modern-datagrid, .modern-datagrid .table {
     background-color: transparent !important;
     color: #f0f0f0;
 }
 
-    /* Style the Table Header (thead) */
     .modern-datagrid thead th {
         color: #fff;
         font-weight: 600;
@@ -280,7 +277,6 @@ h1:focus {
         border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
     }
 
-    /* Style the Table Body Rows (tbody) */
     .modern-datagrid tbody tr {
         border-color: rgba(255, 255, 255, 0.15) !important;
     }
@@ -291,7 +287,6 @@ h1:focus {
         vertical-align: middle;
     }
 
-    /* Custom Striped and Hover effects to match our theme */
     .modern-datagrid .datagrid-row-striped > td {
         background-color: rgba(255, 255, 255, 0.03) !important;
     }
@@ -301,14 +296,14 @@ h1:focus {
         color: #fff;
     }
 
-/* Styling for the action buttons container */
+
 .action-buttons {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
 }
 
-/* Empty data state message */
+
 .empty-datagrid-message {
     text-align: center;
     padding: 2rem;

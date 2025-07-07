@@ -1,0 +1,161 @@
+﻿@page "/festivals/details"
+@rendermode InteractiveServer
+@inject IFestivalRepository festivalRepository
+@inject IBandRepository bandRepository
+@inject NavigationManager Navigation
+@inject ShowTimeContext db
+
+@if (Festival == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <Card Margin="Margin.Is3" Padding="Padding.Is4" Background="Background.White" Shadow="Shadow.Default">
+        <CardHeader>
+            <Heading Size="HeadingSize.Is4">@Festival.Name</Heading>
+        </CardHeader>
+        <CardBody>
+            <p><strong>Location:</strong> @Festival.Location</p>
+            <p><strong>Dates:</strong> @Festival.StartDate?.ToShortDateString() - @Festival.EndDate?.ToShortDateString()</p>
+            <p><strong>Description:</strong> @Festival.Description</p>
+        </CardBody>
+    </Card>
+
+    <Heading Size="HeadingSize.Is3" Margin="Margin.Is3.FromTop">Lineup</Heading>
+
+    <DropContainer TItem="DropItem"
+                   Items="@Items"
+                   ItemsFilter="@( (item, zone) => item.Group == zone )"
+                   ItemDropped="@ItemDropped"
+                   ItemOrderChanged="@Reordered"
+                   Flex="Flex.Wrap.Grow.Is1">
+
+        <ChildContent>
+            <DropZone TItem="DropItem" Name="Unplanned" Border="Border.Rounded" Background="Background.Light" Padding="Padding.Is3" Margin="Margin.Is3" Flex="Flex.Grow.Is1">
+                <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom" TextColor="TextColor.Black50">Unplanned</Heading>
+            </DropZone>
+            <DropZone TItem="DropItem" Name="Planned" Border="Border.Rounded" AllowReorder Reordered="@Reordered" Background="Background.Light" Padding="Padding.Is3" Margin="Margin.Is3" Flex="Flex.Grow.Is1">
+                <Heading Size="HeadingSize.Is4" Margin="Margin.Is3.FromBottom" TextColor="TextColor.Black50">Planned</Heading>
+            </DropZone>
+        </ChildContent>
+
+        <ItemTemplate>
+            <Card Shadow="Shadow.Default" Margin="Margin.Is2.OnY">
+                <CardBody>
+                    @context.Name
+                </CardBody>
+            </Card>
+        </ItemTemplate>
+    </DropContainer>
+
+    <p class="text-muted mt-3">@reorderStatus</p>
+}
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public Guid? Id { get; set; }
+
+    private Festival? Festival;
+    private List<DropItem> Items = new();
+    private string reorderStatus = "";
+
+    public class DropItem
+    {
+        public Guid BandId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Group { get; set; } = "Unplanned"; 
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+        {
+            Navigation.NavigateTo("/festivals");
+            return;
+        }
+
+        Festival = await db.Festivals!
+            .Include(f => f.FestivalBands!)
+                .ThenInclude(fb => fb.Band)
+            .FirstOrDefaultAsync(f => f.Id == Id);
+
+        if (Festival == null)
+        {
+            Navigation.NavigateTo("/festivals");
+            return;
+        }
+
+        var allBands = await db.Bands!.ToListAsync();
+
+        var plannedBands = Festival.FestivalBands?.Select(fb => fb.Band).ToList() ?? new();
+
+        var unplannedBands = allBands.Except(plannedBands).ToList();
+
+        Items = plannedBands.Select(b => new DropItem
+            {
+                BandId = b.Id,
+                Name = b.Name ?? "",
+                Group = "Planned"
+            }).Concat(unplannedBands.Select(b => new DropItem
+            {
+                BandId = b.Id,
+                Name = b.Name ?? "",
+                Group = "Unplanned"
+            })).ToList();
+    }
+
+    private async Task ItemDropped(DraggableDroppedEventArgs<DropItem> args)
+    {
+        var item = args.Item;
+        var newZone = args.DropZoneName;
+
+        item.Group = newZone;
+
+        var existingEntry = await db.FestivalBands!.FindAsync(Festival!.Id, item.BandId);
+
+        if (newZone == "Planned" && existingEntry == null)
+        {
+            db.FestivalBands!.Add(new FestivalBand
+                {
+                    FestivalId = Festival.Id,
+                    BandId = item.BandId,
+                    Order = Festival.FestivalBands!.Count + 1
+                });
+        }
+        else if (newZone == "Unplanned" && existingEntry != null)
+        {
+            db.FestivalBands!.Remove(existingEntry);
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+    private async Task Reordered(DropZoneOrder<DropItem> order)
+    {
+        reorderStatus = $"Order in {order.DestinationDropZoneName}: {string.Join(", ", order.OrderedItems.Select(i => i.Item.Name))}";
+
+        if (order.DestinationDropZoneName != "Planned")
+            return; 
+
+        var plannedEntries = await db.FestivalBands!
+            .Where(fb => fb.FestivalId == Festival!.Id)
+            .ToListAsync();
+
+        for (int i = 0; i < order.OrderedItems.Count; i++)
+        {
+            var bandId = order.OrderedItems[i].Item.BandId;
+            var entry = plannedEntries.FirstOrDefault(fb => fb.BandId == bandId);
+
+            if (entry != null)
+            {
+                entry.Order = i + 1;
+            }
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+}
