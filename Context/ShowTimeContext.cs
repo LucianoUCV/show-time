@@ -1,8 +1,11 @@
 ﻿namespace Context;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-public class ShowTimeContext : DbContext
+public class ShowTimeContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public ShowTimeContext(DbContextOptions<ShowTimeContext> options) : base(options)
     {
@@ -26,5 +29,7 @@ public class ShowTimeContext : DbContext
             .HasOne(sc => sc.Band)
             .WithMany(c => c.FestivalBands)
             .HasForeignKey(sc => sc.BandId);
+
+        base.OnModelCreating(modelBuilder);
     }
 }
