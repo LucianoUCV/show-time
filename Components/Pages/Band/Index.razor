@@ -32,11 +32,6 @@
                     <DataGridColumn TItem="Band" Caption="Actions" TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
                             <div class="action-buttons">
-                                @* 
-                                  THE FIX:
-                                  We use standard <a> tags with an href for guaranteed navigation.
-                                  We apply the 'btn' classes manually to make them look like buttons.
-                                *@
                                 <a href="@($"/bands/edit?id={context.Id}")" class="btn btn-outline-secondary btn-sm">Edit</a>
                                 <a href="@($"/bands/details?id={context.Id}")" class="btn btn-outline-info btn-sm">Details</a>
                                 <a href="@($"/bands/delete?id={context.Id}")" class="btn btn-outline-danger btn-sm">Delete</a>
