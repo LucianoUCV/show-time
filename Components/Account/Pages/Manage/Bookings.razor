@@ -1,0 +1,112 @@
+﻿@page "/Account/Manage/Bookings"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Models
+@using show_time.Interfaces
+
+@inject IBookingRepository BookingRepository
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityUserAccessor UserAccessor
+@inject AuthenticationStateProvider AuthStateProvider 
+
+<PageTitle>My Bookings</PageTitle>
+
+<h3>My Bookings</h3>
+
+@if (userBookings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!userBookings.Any())
+{
+    <p>You have no festival bookings yet. <a href="/festivals">Find a festival to book!</a></p>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var booking in userBookings)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">@booking.Festival.Name</h5>
+                    <p class="mb-1"><strong>Location:</strong> @booking.Festival.Location</p>
+                    <p class="mb-1"><strong>Dates:</strong> @booking.Festival.StartDate?.ToShortDateString() - @booking.Festival.EndDate?.ToShortDateString()</p>
+                    <small><strong>Booked on:</strong> @booking.DateCreated.ToShortDateString()</small>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-danger" @onclick="() => ShowCancelConfirmation(booking)">Cancel</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <Modal @ref="cancelModalRef" Class="app-light-modal">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>Confirm Cancellation</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                Are you sure you want to cancel your booking for <strong>@bookingToCancel?.Festival.Name</strong>? This action cannot be undone.
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="() => cancelModalRef.Hide()">Nevermind</Button>
+                <Button Color="Color.Danger" Clicked="ConfirmCancelBooking">Yes, Cancel Booking</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+
+
+@code {
+    private IEnumerable<Booking>? userBookings;
+    private Modal? cancelModalRef;
+    private Booking? bookingToCancel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userPrincipal = authState.User;
+
+        if (userPrincipal.Identity is { IsAuthenticated: true })
+        {
+            var user = await UserManager.GetUserAsync(userPrincipal);
+            if (user != null)
+            {
+                userBookings = await BookingRepository.GetBookingsForUserAsync(user.Id);
+            }
+        }
+
+        if (userBookings is null)
+        {
+            userBookings = new List<Booking>();
+        }
+    }
+
+    private Task ShowCancelConfirmation(Booking bookingForCancellation)
+    {
+        bookingToCancel = bookingForCancellation;
+        return cancelModalRef?.Show() ?? Task.CompletedTask;
+    }
+
+	private async Task ConfirmCancelBooking()
+	{
+        if (bookingToCancel == null)
+        {
+            return;
+        }
+
+        BookingRepository.Delete(bookingToCancel);
+
+        await BookingRepository.SaveChangesAsync();
+
+        if (userBookings != null)
+        {
+            ((List<Booking>)userBookings).Remove(bookingToCancel);
+        }
+
+        await (cancelModalRef?.Hide() ?? Task.CompletedTask);
+        bookingToCancel = null;
+	}
+}

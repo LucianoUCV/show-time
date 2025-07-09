@@ -1,0 +1,125 @@
+﻿@page "/booking/create"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject UserManager<ApplicationUser> UserManager
+@inject IFestivalRepository FestivalRepository
+@inject IBookingRepository BookingRepository
+@inject AuthenticationStateProvider AuthStateProvider
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+
+@if (festival == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <Card Margin="Margin.Is4" Padding="Padding.Is4">
+        <CardHeader>
+            <Heading Size="HeadingSize.Is4">Book @festival.Name</Heading>
+        </CardHeader>
+        <CardBody>
+            <p><strong>Location:</strong> @festival.Location</p>
+            <p><strong>Date:</strong> @festival.StartDate?.ToShortDateString() - @festival.EndDate?.ToShortDateString()</p>
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <Alert Color="Color.Danger" Visible="true">
+                    @errorMessage
+                </Alert>
+            }
+            <Button Color="Color.Primary" Type="ButtonType.Button" Clicked="ConfirmBooking">Confirm Booking</Button>
+        </CardBody>
+    </Card>
+
+    <Modal @ref="confirmationModalRef" Class="app-light-modal">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>Booking Confirmed!</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                You are all set for @festival.Name. We can't wait to see you there!
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Primary" Clicked="NavigateToFestivals">Back to Festivals</Button>
+                <Button Color="Color.Secondary" Clicked="NavigateToMyBookings">View My Bookings</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public Guid? Id { get; set; }
+
+    private Festival? festival;
+
+    private string? errorMessage;
+
+    private Modal? confirmationModalRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+        {
+            Navigation.NavigateTo("/festivals");
+            return;
+        }
+
+        festival = await FestivalRepository.GetByIdAsync(Id.Value);
+
+        if (festival == null)
+        {
+            Navigation.NavigateTo("/festivals");
+            return;
+        }
+    }
+
+    private async Task ConfirmBooking()
+    {
+        errorMessage = null;
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+
+        if (user == null || festival == null)
+            return;
+
+        bool alreadyBooked = await BookingRepository.HasBookingAsync(user.Id, festival.Id);
+        if (alreadyBooked)
+        {
+            errorMessage = "You have already booked this festival.";
+            return; 
+        }
+
+        var booking = new Booking
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                FestivalId = festival.Id,
+                DateCreated = DateTime.UtcNow
+            };
+
+        await BookingRepository.AddAsync(booking);
+        await BookingRepository.SaveChangesAsync();
+
+        if (confirmationModalRef != null)
+        {
+            await confirmationModalRef.Show();
+        }
+    }
+
+    private Task NavigateToFestivals()
+    {
+        Navigation.NavigateTo("/festivals");
+        return Task.CompletedTask;
+    }
+
+    private Task NavigateToMyBookings()
+    {
+        Navigation.NavigateTo("/Account/Manage/Bookings");
+        return Task.CompletedTask;
+    }
+}

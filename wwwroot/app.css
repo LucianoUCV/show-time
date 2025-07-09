@@ -20,11 +20,6 @@ a, .btn-link {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.content {
-    padding-top: 3rem;
-    width: 100%;
-}
-
 h1:focus {
     outline: none;
 }
@@ -85,12 +80,26 @@ h1:focus {
 .custom-navbar {
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
     background: transparent;
     padding: 1rem 2rem;
     gap: 2rem;
     width: 100%;
+/*    top: 0;
+    left: 0;
+    z-index: 1030;*/
 }
+
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; 
+    padding: 2rem 1rem;
+    color: white;
+}
+
 
 .logo {
     width: 120px;
@@ -127,13 +136,10 @@ h1:focus {
             color: #ccc;
         }
 
-.page {
-    min-height: 100vh;
+.page-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    color: white;
+    min-height: 100vh;
 }
 
 
@@ -308,4 +314,19 @@ h1:focus {
     text-align: center;
     padding: 2rem;
     color: #ccc;
+}
+
+
+.app-light-modal .modal-content {
+    background-color: #f8f9fa; 
+    color: #212529; 
+}
+
+.app-light-modal .modal-title {
+    color: #000000; 
+}
+
+
+.app-light-modal .modal-header .btn-close {
+    filter: none;
 }
