@@ -1,6 +1,44 @@
 ﻿@page "/contact"
 
-<h3>Contact</h3>
+<Div Margin="Margin.IsAuto.OnX" Padding="Padding.Is5.OnX" Width="Width.Is75">
+    <Heading Size="HeadingSize.Is2" Margin="Margin.Is3.FromBottom" TextAlignment="TextAlignment.Center">
+        Contact us
+    </Heading>
+    <Paragraph Margin="Margin.Is5.FromBottom" TextAlignment="TextAlignment.Center">
+		Do you want your festival here? You have any questions? Submit a request and we will get back to you as soon as possible.
+    </Paragraph>
+    <Form>
+        <Field>
+            <FieldLabel>
+                Your email
+            </FieldLabel>
+            <FieldBody>
+                <TextEdit Placeholder="" />
+            </FieldBody>
+        </Field>
+        <Field>
+            <FieldLabel>
+                Subject
+            </FieldLabel>
+            <FieldBody>
+                <TextEdit Placeholder="Your request" />
+            </FieldBody>
+        </Field>
+        <Field>
+            <FieldLabel>
+                Message
+            </FieldLabel>
+            <FieldBody>
+                <MemoEdit Placeholder="Write your request here..." Rows="5" />
+            </FieldBody>
+        </Field>
+        <Field>
+            <Button Class="btn btn-outline-info">
+                Send message
+            </Button>
+        </Field>
+    </Form>
+</Div>
 
 @code {
 
