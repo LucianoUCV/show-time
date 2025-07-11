@@ -1,8 +1,13 @@
 ﻿@page "/festivals/create"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
+@using System.IO
 @inject IFestivalRepository festivalRepository
 @inject NavigationManager NavigationManager
+@inject IWebHostEnvironment WebHostEnvironment
+
+<h3>Create Festival</h3>
 
 <Fields>
 	<Field>
@@ -21,30 +26,35 @@
 			</Addon>
 			<Addon AddonType="AddonType.End">
 				<Button Color="Color.Light" Clicked="@(()=>startDatePicker.ToggleAsync())" Class="date-btn">
-					<Icon Name="IconName.CalendarDay" /> Alege data
+					<Icon Name="IconName.CalendarDay" /> Pick date
 				</Button>
 			</Addon>
 		</Addons>
 	</Field>
-	<Field> 
-		<Label>End Date:</Label> 
+	<Field>
+		<Label>End Date:</Label>
 		<Addons>
 			<Addon AddonType="AddonType.Body">
 				<DatePicker @ref="@endDatePicker" @bind-Date="@Festival.EndDate" />
 			</Addon>
 			<Addon AddonType="AddonType.End">
 				<Button Color="Color.Light" Clicked="@(()=>endDatePicker.ToggleAsync())" Class="date-btn">
-					<Icon Name="IconName.CalendarDay" /> Alege data
+					<Icon Name="IconName.CalendarDay" /> Pick date
 				</Button>
 			</Addon>
 		</Addons>
-	</Field> 
+	</Field>
+
+	<Field>
+		<Label>Festival Image:</Label>
+		<InputFile OnChange="LoadImageFile" class="form-control" />
+	</Field>
 </Fields>
 
 <Button Color="Color.Primary" Type="ButtonType.Button" Clicked="HandleSubmit">Save</Button>
 
 <div>
-	<a href="/bands">Back to list</a>
+	<a href="/festivals">Back to list</a>
 </div>
 
 @code {
@@ -52,12 +62,30 @@
 	DatePicker<DateTime?> startDatePicker;
 	DatePicker<DateTime?> endDatePicker;
 
-	DateTime? value;
+	private IBrowserFile? selectedImageFile;
 
 	private async Task HandleSubmit()
 	{
 		await festivalRepository.AddAsync(Festival);
 		await festivalRepository.SaveChangesAsync();
+
+		if (selectedImageFile != null)
+		{
+			var imagePath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "festivals");
+			var fileName = $"{Festival.Id}.jpg";
+			var fullPath = Path.Combine(imagePath, fileName);
+
+			Directory.CreateDirectory(imagePath);
+
+			await using var stream = new FileStream(fullPath, FileMode.Create);
+			await selectedImageFile.OpenReadStream(maxAllowedSize: 5242880).CopyToAsync(stream); 
+		}
+
 		NavigationManager.NavigateTo("/festivals");
+	}
+
+	private void LoadImageFile(InputFileChangeEventArgs e)
+	{
+		selectedImageFile = e.File;
 	}
 }

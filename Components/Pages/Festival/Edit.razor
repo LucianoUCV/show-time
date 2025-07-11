@@ -1,78 +1,118 @@
 ﻿@page "/festivals/edit"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
+@using System.IO
 @inject IFestivalRepository festivalRepository
 @inject NavigationManager NavigationManager
+@inject IWebHostEnvironment WebHostEnvironment
 
-<Fields>
-	<Field>
-		<Label>Name:</Label>
-		<TextEdit @bind-Text="Festival.Name" Placeholder="Enter festival name" Required="true" />
-	</Field>
-	<Field>
-		<Label>Location:</Label>
-		<TextEdit @bind-Text="Festival.Location" Placeholder="Enter festival location" Required="true" />
-	</Field>
-	<Field>
-		<Label>Start Date:</Label>
-		<Addons>
-			<Addon AddonType="AddonType.Body">
-				<DatePicker @ref="@startDatePicker" @bind-Date="@Festival.StartDate" />
-			</Addon>
-			<Addon AddonType="AddonType.End">
-				<Button Color="Color.Light" Clicked="@(()=>startDatePicker.ToggleAsync())" Class="date-btn">
-					<Icon Name="IconName.CalendarDay" /> Alege data
-				</Button>
-			</Addon>
-		</Addons>
-	</Field>
-	<Field>
-		<Label>End Date:</Label>
-		<Addons>
-			<Addon AddonType="AddonType.Body">
-				<DatePicker @ref="@endDatePicker" @bind-Date="@Festival.EndDate" />
-			</Addon>
-			<Addon AddonType="AddonType.End">
-				<Button Color="Color.Light" Clicked="@(()=>endDatePicker.ToggleAsync())" Class="date-btn">
-					<Icon Name="IconName.CalendarDay" /> Alege data
-				</Button>
-			</Addon>
-		</Addons>
-	</Field>
-</Fields>
+<h3>Edit Festival</h3>
 
-<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="HandleSubmit">Save</Button>
-<Button Color="Color.Secondary" Type="ButtonType.Button" Clicked="Cancel">Cancel</Button>
+@if (Festival == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Fields>
+        <Field>
+            <Label>Name:</Label>
+            <TextEdit @bind-Text="Festival.Name" Placeholder="Enter festival name" Required="true" />
+        </Field>
+        <Field>
+            <Label>Location:</Label>
+            <TextEdit @bind-Text="Festival.Location" Placeholder="Enter festival location" Required="true" />
+        </Field>
+        <Field>
+            <Label>Description:</Label>
+            <MemoEdit @bind-Text="Festival.Description" Placeholder="Enter a short description" Rows="3" />
+        </Field>
+        <Field>
+            <Label>Start Date:</Label>
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@startDatePicker" @bind-Date="@Festival.StartDate" />
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <Button Color="Color.Light" Clicked="@(()=>startDatePicker.ToggleAsync())" Class="date-btn">
+                        <Icon Name="IconName.CalendarDay" /> Pick date
+                    </Button>
+                </Addon>
+            </Addons>
+        </Field>
+        <Field>
+            <Label>End Date:</Label>
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@endDatePicker" @bind-Date="@Festival.EndDate" />
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <Button Color="Color.Light" Clicked="@(()=>endDatePicker.ToggleAsync())" Class="date-btn">
+                        <Icon Name="IconName.CalendarDay" /> Pick date
+                    </Button>
+                </Addon>
+            </Addons>
+        </Field>
 
-<div>
-	<a href="/festivals">Back to list</a>
-</div>
+        <Field>
+            <Label>Replace Festival Image:</Label>
+            <InputFile OnChange="LoadImageFile" class="form-control" />
+        </Field>
+    </Fields>
+
+    <Button Color="Color.Primary" Type="ButtonType.Button" Clicked="HandleSubmit">Save</Button>
+    <Button Color="Color.Secondary" Type="ButtonType.Button" Clicked="Cancel">Cancel</Button>
+
+    <div>
+        <a href="/festivals">Back to list</a>
+    </div>
+}
+
 
 @code {
-	private Festival? Festival { get; set; } = new();
+    private Festival? Festival { get; set; } = new();
 
-	[SupplyParameterFromQuery]
-	public Guid Id { get; set; }
+    [SupplyParameterFromQuery]
+    public Guid Id { get; set; }
 
-	DatePicker<DateTime?> startDatePicker;
-	DatePicker<DateTime?> endDatePicker;
+    DatePicker<DateTime?> startDatePicker;
+    DatePicker<DateTime?> endDatePicker;
 
-	DateTime? value;
+    private IBrowserFile? selectedImageFile;
 
-	protected override async Task OnInitializedAsync()
-	{
-		Festival = await festivalRepository.GetByIdAsync(Id);
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        Festival = await festivalRepository.GetByIdAsync(Id);
+    }
 
-	private async Task HandleSubmit()
-	{
-		festivalRepository.Update(Festival);
-		await festivalRepository.SaveChangesAsync();
-		NavigationManager.NavigateTo("/festivals");
-	}
+    private async Task HandleSubmit()
+    {
+        festivalRepository.Update(Festival);
+        await festivalRepository.SaveChangesAsync();
 
-	private void Cancel()
-	{
-		NavigationManager.NavigateTo("/festivals");
-	}
+        if (selectedImageFile != null)
+        {
+            var imagePath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "festivals");
+            var fileName = $"{Festival.Id}.jpg";
+            var fullPath = Path.Combine(imagePath, fileName);
+
+            Directory.CreateDirectory(imagePath);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await selectedImageFile.OpenReadStream(maxAllowedSize: 5242880).CopyToAsync(stream); 
+        }
+
+        NavigationManager.NavigateTo("/festivals");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/festivals");
+    }
+
+    private void LoadImageFile(InputFileChangeEventArgs e)
+    {
+        selectedImageFile = e.File;
+    }
 }

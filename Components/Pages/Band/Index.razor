@@ -1,6 +1,7 @@
 ﻿@page "/bands"
 @rendermode InteractiveServer
 @inject IBandRepository bandRepository
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="bands-page-container">
 

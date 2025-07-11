@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <header class="hero-section">
     <div class="hero-content">

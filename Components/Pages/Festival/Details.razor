@@ -1,5 +1,6 @@
 ﻿@page "/festivals/details/{id:guid}"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 @inject IFestivalRepository FestivalRepo
 @inject IBandRepository BandRepo
 @inject NavigationManager Navigation

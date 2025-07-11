@@ -1,5 +1,6 @@
 ﻿@page "/bands/create"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 @inject IBandRepository bandRepository
 @inject NavigationManager NavigationManager

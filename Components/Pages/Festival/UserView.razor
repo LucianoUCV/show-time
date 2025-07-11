@@ -1,7 +1,61 @@
 ﻿@page "/festival/user-view"
+@using Models
+@inject IFestivalRepository festivalRepository
 
-<h3>UserView</h3>
+<PageTitle>Festivals</PageTitle>
+
+<section class="hero">
+    <h1>Explore Upcoming Festivals</h1>
+    <p>Vibes. Lights. Energy. Book your next experience.</p>
+</section>
+
+@if (festivals == null)
+{
+    <div class="loading-msg">Loading festivals...</div>
+}
+else if (!festivals.Any())
+{
+    <div class="loading-msg">No festivals available at the moment.</div>
+}
+else
+{
+    <div class="festival-grid">
+        @foreach (var festival in festivals)
+        {
+            <div class="festival-card">
+                <div class="festival-img" style="background-image: url('images/festivals/@(festival.Id).jpg');">
+                    <div class="festival-overlay">
+                        <div class="festival-date">
+                            @if (festival.StartDate.HasValue)
+                            {
+                                <span>@festival.StartDate.Value.ToString("MMM dd")</span>
+                            }
+                            @if (festival.EndDate.HasValue)
+                            {
+                                <span> - @festival.EndDate.Value.ToString("MMM dd")</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="festival-info">
+                    <h3>@festival.Name</h3>
+                    <p class="location">@festival.Location</p>
+                    <p class="desc">@festival.Description</p>
+                    <div class="action-buttons">
+                        <a class="btn-details" href="@($"/festival/lineup/{festival.Id}")">View Details</a>
+                        <a class="btn-book" href="@($"/booking/create?id={festival.Id}")">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
+    private List<Festival>? festivals;
 
+    protected override async Task OnInitializedAsync()
+    {
+        festivals = (await festivalRepository.GetAllAsync()).ToList();
+    }
 }

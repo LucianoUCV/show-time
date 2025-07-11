@@ -1,5 +1,6 @@
 ﻿@page "/festivals"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 @inject IFestivalRepository festivalRepository
 
 <div class="bands-page-container">

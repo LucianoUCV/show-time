@@ -1,5 +1,6 @@
 ﻿@page "/festivals/delete"
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 @inject IFestivalRepository festivalRepository
 @inject NavigationManager NavigationManager
