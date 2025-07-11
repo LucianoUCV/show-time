@@ -1,7 +1,6 @@
 ﻿using Models;
-using show_time.Interfaces;
 
-namespace Interfaces;
+namespace show_time.Interfaces;
 
 public interface IFestivalBandRepository : IRepositoryBase<FestivalBand>
 {

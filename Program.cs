@@ -39,6 +39,7 @@ builder.Services.AddDbContext<ShowTimeContext>(options =>
 builder.Services.AddScoped<IBandRepository, BandRepository>();
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IFestivalBandRepository, FestivalBandRepository>();
 
 builder.Services
     .AddBlazorise(options =>
