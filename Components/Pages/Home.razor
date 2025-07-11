@@ -3,19 +3,10 @@
 
 <header class="hero-section">
     <div class="hero-content">
-        <h1>🎉 Cele mai tari festivale din tara</h1>
-        <h3><em>(mai putin cel al lui Selly)</em></h3>
-        <p>Alege unul ( sau mai multe )</p>
-        <Addons>
-            <Addon AddonType="AddonType.Body">
-                <DatePicker @ref="@datePicker" TValue="DateTime?" @bind-Date="@value" />
-            </Addon>
-            <Addon AddonType="AddonType.End">
-                <Button Color="Color.Light" Clicked="@(()=>datePicker.ToggleAsync())" Class="date-btn">
-                    <Icon Name="IconName.CalendarDay" /> Alege data
-                </Button>
-            </Addon>
-        </Addons>
+        <h1>Most anticipated festivals around the globe</h1>
+        <h3><em>( there's a single exception )</em></h3>
+        <br />
+        <a href="@($"/festival/user-view")" class="btn btn-outline-info btn">Explore festivals</a>
     </div>
 </header>
 
@@ -52,11 +43,9 @@
 </section>
 
 <footer class="page-footer">
-    <p>© 2025 Show Time - Distractia la un click distanta </p>
+    <p>© 2025 Show Time</p>
 </footer>
 
 @code {
-    DatePicker<DateTime?> datePicker;
-    DateTime? value;
     private string selectedSlide = "1";
 }
